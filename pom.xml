@@ -44,7 +44,7 @@
             <artifactId>logback-classic</artifactId>
         </dependency>
 
-        <!-- Тесты -->
+        <!-- Tests -->
         <dependency>
             <groupId>io.micronaut.test</groupId>
             <artifactId>micronaut-test-junit5</artifactId>

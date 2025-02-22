@@ -1,4 +1,4 @@
-package com.example.filestorage.config;
+package goga.kolxo3.filestorage.config;
 
 import io.micronaut.context.annotation.ConfigurationProperties;
 

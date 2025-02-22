@@ -1,6 +1,6 @@
-package com.example.filestorage.service;
+package goga.kolxo3.filestorage.service;
 
-import com.example.filestorage.model.FileMetadata;
+import goga.kolxo3.filestorage.model.FileMetadata;
 import jakarta.inject.Singleton;
 import java.util.List;
 

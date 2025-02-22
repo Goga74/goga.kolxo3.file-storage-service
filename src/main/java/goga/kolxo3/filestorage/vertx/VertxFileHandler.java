@@ -1,4 +1,4 @@
-package com.example.filestorage.vertx;
+package goga.kolxo3.filestorage.vertx;
 
 import io.vertx.core.Vertx;
 import jakarta.inject.Singleton;

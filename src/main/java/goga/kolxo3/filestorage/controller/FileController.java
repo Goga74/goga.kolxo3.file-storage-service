@@ -1,7 +1,7 @@
-package com.example.filestorage.controller;
+package goga.kolxo3.filestorage.controller;
 
-import com.example.filestorage.model.FileMetadata;
-import com.example.filestorage.service.FileStorageService;
+import goga.kolxo3.filestorage.model.FileMetadata;
+import goga.kolxo3.filestorage.service.FileStorageService;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;

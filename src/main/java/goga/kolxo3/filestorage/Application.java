@@ -1,4 +1,4 @@
-package com.example.filestorage;
+package goga.kolxo3.filestorage;
 
 import io.micronaut.runtime.Micronaut;
 
