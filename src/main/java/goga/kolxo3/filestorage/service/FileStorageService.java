@@ -1,10 +1,8 @@
 package goga.kolxo3.filestorage.service;
 
 import goga.kolxo3.filestorage.model.FileMetadata;
-import jakarta.inject.Singleton;
 import java.util.List;
 
-@Singleton
 public class FileStorageService {
     public FileMetadata storeFile(byte[] content, String originalName) {
         // Логика сохранения файла
