@@ -1,13 +1,19 @@
 {
 	"info": {
 		"_postman_id": "379fa673-81b5-44c2-8f42-fcef52ab4799",
-		"name": "Micronaut",
+		"name": "vertx",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "2871629"
 	},
 	"item": [
 		{
-			"name": "localhost:8080/files",
+			"name": "localhost:8080/upload",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true,
+					"user-agent": true
+				}
+			},
 			"request": {
 				"auth": {
 					"type": "noauth"
@@ -21,31 +27,24 @@
 					}
 				],
 				"body": {
-					"mode": "raw",
-					"raw": "HTTP/1.1\r\nContent-Type: multipart/form-data; boundary=---------------------------boundary1234567890abcdefg\r\n---------------------------boundary1234567890abcdefg\r\nContent-Disposition: form-data; name=\"file\"; filename=\"test1.txt\"\r\nContent-Type: text/plain\r\ntest1\r\n---------------------------boundary1234567890abcdefg\r\nContent-Disposition: form-data; name=\"metadata\"\r\n{\"tags\": \"tag1, tag2, tag3\"}\r\n---------------------------boundary1234567890abcdefg--",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
+					"mode": "formdata",
+					"formdata": []
 				},
 				"url": {
-					"raw": "localhost:8082/files/param1/param2",
+					"raw": "localhost:8082/upload",
 					"host": [
 						"localhost"
 					],
 					"port": "8082",
 					"path": [
-						"files",
-						"param1",
-						"param2"
+						"upload"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "GET by ID",
+			"name": "GET by ID desc",
 			"protocolProfileBehavior": {
 				"disabledSystemHeaders": {
 					"user-agent": true,
@@ -68,7 +67,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8082/desc?id=fb08ed81-eea9-475a-b5df-b0552c8a55ac",
+					"raw": "http://localhost:8082/desc?id=fb08ed81-eea9-475a-b5df-b0552c8a55ac&token=my-secret-token",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -81,6 +80,151 @@
 						{
 							"key": "id",
 							"value": "fb08ed81-eea9-475a-b5df-b0552c8a55ac"
+						},
+						{
+							"key": "token",
+							"value": "my-secret-token"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET by ID desc Copy",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"user-agent": true,
+					"accept-encoding": true,
+					"accept": true
+				}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8082/desc?id=fb08ed81-eea9-475a-b5df-b0552c8a55ac&token=my-secret-token2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"desc"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "fb08ed81-eea9-475a-b5df-b0552c8a55ac"
+						},
+						{
+							"key": "token",
+							"value": "my-secret-token2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET by ID content",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"user-agent": true,
+					"accept-encoding": true,
+					"accept": true
+				}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8082/content?id=fb08ed81-eea9-475a-b5df-b0552c8a55ac&token=my-secret-token",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"content"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "fb08ed81-eea9-475a-b5df-b0552c8a55ac"
+						},
+						{
+							"key": "token",
+							"value": "my-secret-token"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET by ID content Copy",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"user-agent": true,
+					"accept-encoding": true,
+					"accept": true
+				}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8082/content?id=fb08ed81-eea9-475a-b5df-b0552c8a55ac&token=my-secret-token",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"content"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "fb08ed81-eea9-475a-b5df-b0552c8a55ac"
+						},
+						{
+							"key": "token",
+							"value": "my-secret-token"
 						}
 					]
 				}

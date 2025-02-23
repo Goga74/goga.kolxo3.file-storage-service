@@ -2,6 +2,7 @@ package goga.kolxo3.filestorage.verticle;
 
 import goga.kolxo3.filestorage.controller.FileGetController;
 import goga.kolxo3.filestorage.controller.FileUploadController;
+import goga.kolxo3.filestorage.controller.HtmlController;
 import goga.kolxo3.filestorage.auth.TokenAuthHandler;
 import io.vertx.config.ConfigRetriever;
 import io.vertx.config.ConfigRetrieverOptions;
@@ -9,9 +10,10 @@ import io.vertx.config.ConfigStoreOptions;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Promise;
+import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
-
+import io.vertx.ext.web.RoutingContext;
 
 public class MainVerticle extends AbstractVerticle {
 
@@ -52,84 +54,47 @@ public class MainVerticle extends AbstractVerticle {
                         vertx.deployVerticle(new FileGetController(), fileGetOptions, res2 -> {
                             if (res2.succeeded()) {
                                 System.out.println("FileGetController развернут успешно.");
-                                // Создаем Router и настраиваем обработчики
-                                Router router = Router.router(vertx);
 
-                                // Защищаем эндпоинты FileGetController
-                                router.get("/desc").handler(tokenAuthHandler);
-                                router.get("/content").handler(tokenAuthHandler);
+                                // Разворачиваем HtmlController
+                                vertx.deployVerticle(new HtmlController(), res3 -> {
+                                    if (res3.succeeded()) {
+                                        System.out.println("HtmlController развернут успешно.");
 
-                                // Добавляем обработчики FileGetController
-                                router.get("/desc").handler(context -> {
-                                    String id = context.request().getParam("id");
-                                    System.out.println("id: " + id);
-                                    String token = context.request().getParam("token"); // Получаем токен
-                                    System.out.println("token: " + token);
+                                        // Создаем Router и настраиваем обработчики
+                                        Router router = Router.router(vertx);
 
-                                    if (id == null) {
-                                        context.response()
+                                        // Защищаем эндпоинты FileGetController
+                                        router.get("/desc").handler(tokenAuthHandler);
+                                        router.get("/content").handler(tokenAuthHandler);
+
+                                        // Добавляем обработчики FileGetController
+                                        router.get("/desc").handler(context -> handleGetRequest(context, FileGetController.ADDRESS_GET_DESCRIPTION));
+                                        router.get("/content").handler(context -> handleGetRequest(context, FileGetController.ADDRESS_GET_CONTENT));
+
+                                        // Публичный эндпоинт
+                                        router.get("/public").handler(ctx -> ctx.response()
                                                 .putHeader("Content-Type", "application/json; charset=" + charset)
-                                                .setStatusCode(400)
-                                                .end(new JsonObject().put("error", "Необходим параметр id").encodePrettily());
-                                        return;
-                                    }
+                                                .end("{\"message\": \"This is a public endpoint!\"}"));
 
-                                    JsonObject requestData = new JsonObject().put("id", id);
-                                    vertx.eventBus().request(FileGetController.ADDRESS_GET_DESCRIPTION, requestData, result -> {
-                                        if (result.succeeded()) {
-                                            context.response()
-                                                    .putHeader("Content-Type", "application/json; charset=" + charset)
-                                                    .end((String) result.result().body());
-                                        } else {
-                                            context.fail(result.cause());
-                                        }
-                                    });
-                                });
-                                router.get("/content").handler(context -> {
-                                    String id = context.request().getParam("id");
-                                    System.out.println("id: " + id);
-                                    String token = context.request().getParam("token"); // Получаем токен
-                                    System.out.println("token: " + token);
-
-                                    if (id == null) {
-                                        context.response()
+                                        // Обработчик для всех остальных маршрутов
+                                        router.route().handler(context -> context.response()
+                                                .setStatusCode(404)
                                                 .putHeader("Content-Type", "application/json; charset=" + charset)
-                                                .setStatusCode(400)
-                                                .end(new JsonObject().put("error", "Необходим параметр id").encodePrettily());
-                                        return;
-                                    }
+                                                .end(new JsonObject().put("error", "Not Found").encodePrettily()));
 
-                                    JsonObject requestData = new JsonObject().put("id", id);
-                                    vertx.eventBus().request(FileGetController.ADDRESS_GET_CONTENT, requestData, result -> {
-                                        if (result.succeeded()) {
-                                            context.response()
-                                                    .putHeader("Content-Type", "text/plain; charset=" + charset)
-                                                    .end((String) result.result().body());
-                                        } else {
-                                            context.fail(result.cause());
-                                        }
-                                    });
-                                });
-
-                                // Публичный эндпоинт
-                                router.get("/public").handler(ctx -> ctx.response()
-                                        .putHeader("Content-Type", "application/json; charset=" + charset)
-                                        .end("{\"message\": \"This is a public endpoint!\"}"));
-
-                                // Обработчик для всех остальных маршрутов
-                                router.route().handler(context -> context.response()
-                                        .setStatusCode(404)
-                                        .putHeader("Content-Type", "application/json; charset=" + charset)
-                                        .end(new JsonObject().put("error", "Not Found").encodePrettily()));
-
-                                // Создаем HTTP сервер
-                                vertx.createHttpServer().requestHandler(router).listen(httpPort, http -> {
-                                    if (http.succeeded()) {
-                                        System.out.println("HTTP server started on port " + httpPort);
-                                        startPromise.complete();
+                                        // Создаем HTTP сервер
+                                        vertx.createHttpServer().requestHandler(router).listen(httpPort, http -> {
+                                            if (http.succeeded()) {
+                                                System.out.println("HTTP server started on port " + httpPort);
+                                                startPromise.complete();
+                                            } else {
+                                                System.err.println("Не удалось запустить HTTP сервер: " + http.cause());
+                                                startPromise.fail(http.cause());
+                                            }
+                                        });
                                     } else {
-                                        System.err.println("Не удалось запустить HTTP сервер: " + http.cause());
-                                        startPromise.fail(http.cause());
+                                        System.err.println("Ошибка при разворачивании HtmlController: " + res3.cause());
+                                        startPromise.fail(res3.cause());
                                     }
                                 });
                             } else {
@@ -149,4 +114,27 @@ public class MainVerticle extends AbstractVerticle {
         });
     }
 
+    private void handleGetRequest(RoutingContext context, String address) {
+        String id = context.request().getParam("id");
+        if (id == null) {
+            context.response()
+                    .putHeader("Content-Type", "application/json; charset=" + charset)
+                    .setStatusCode(400)
+                    .end(new JsonObject().put("error", "Необходим параметр id").encodePrettily());
+            return;
+        }
+
+        JsonObject requestData = new JsonObject().put("id", id);
+        vertx.eventBus().request(address, requestData, result -> {
+            if (result.succeeded()) {
+                Message<?> message = result.result();
+                String contentType = message.headers().get("Content-Type"); // Get Content-Type from message headers
+                context.response()
+                        .putHeader("Content-Type", contentType)
+                        .end((String) message.body());
+            } else {
+                context.fail(result.cause());
+            }
+        });
+    }
 }

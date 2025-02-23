@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload File</title>
+</head>
+<body>
+<h1>Upload File</h1>
+<form action="http://localhost:8082/upload" method="post"  enctype="multipart/form-data">
+    <label for="filename">Filename:</label>
+    <input type="text" id="filename" name="filename"><br><br>
+
+    <label for="tags">Tags:</label>
+    <input type="text" id="tags" name="tags"><br><br>
+
+    <label for="file">Select file:</label>
+    <input type="file" id="file" name="file"><br><br>
+
+    <input type="submit" value="Upload">
+</form>
+</body>
+</html>
