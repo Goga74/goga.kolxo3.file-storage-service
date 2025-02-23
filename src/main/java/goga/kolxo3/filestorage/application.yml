@@ -1,7 +1,0 @@
-micronaut:
-  application:
-    name: file-storage-service
-  server:
-    port: 8080
-storage:
-  upload-dir: "/tmp/file-storage"

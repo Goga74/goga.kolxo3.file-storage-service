@@ -4,7 +4,7 @@ import io.micronaut.context.annotation.ConfigurationProperties;
 
 @ConfigurationProperties("storage")
 public class StorageConfig {
-    private String uploadDir = "/tmp/file-storage";
+    private String uploadDir = "F:\\Temp\\file-storage\\";
 
     public String getUploadDir() {
         return uploadDir;

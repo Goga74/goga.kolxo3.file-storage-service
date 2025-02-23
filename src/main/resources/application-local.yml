@@ -1,0 +1,7 @@
+micronaut:
+  server:
+    port: 8082
+    multipart:
+      enabled: true
+      max-file-size: 20971520 # Максимальный размер файла в байтах (20MB)
+      max-request-size: 41943040 # Максимальный размер запроса в байтах (40MB)
