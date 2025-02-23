@@ -1,9 +1,11 @@
 package goga.kolxo3.filestorage;
 
-import io.micronaut.runtime.Micronaut;
+import goga.kolxo3.filestorage.controller.FileUploadController;
+import io.vertx.core.Vertx;
 
 public class Application {
     public static void main(String[] args) {
-        Micronaut.run(Application.class, args);
+        Vertx vertx = Vertx.vertx();
+        vertx.deployVerticle(new FileUploadController());
     }
 }

@@ -1,9 +1,7 @@
 package goga.kolxo3.filestorage.vertx;
 
 import io.vertx.core.Vertx;
-import jakarta.inject.Singleton;
 
-@Singleton
 public class VertxFileHandler {
     private final Vertx vertx;
 
