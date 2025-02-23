@@ -1,5 +1,6 @@
 {
   "uploadDir": "F:\\Temp\\file-storage\\uploads",
   "httpPort": 8082,
-  "charset": "UTF-8"
+  "charset": "UTF-8",
+  "validToken": "my-secret-token"
 }
