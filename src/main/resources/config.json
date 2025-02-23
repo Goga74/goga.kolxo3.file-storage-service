@@ -1,4 +1,5 @@
 {
   "uploadDir": "F:\\Temp\\file-storage\\uploads",
-  "httpPort": 8082
+  "httpPort": 8082,
+  "charset": "UTF-8"
 }

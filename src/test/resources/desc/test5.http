@@ -1,0 +1,3 @@
+GET /desc?id=fb08ed81-eea9-475a-b5df-b0552c8a55ac HTTP/1.1
+Host: http://localhost:8082
+Accept: application/json

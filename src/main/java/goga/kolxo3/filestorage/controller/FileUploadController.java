@@ -10,19 +10,22 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 
-public class FileUploadController extends AbstractVerticle
-{
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.UUID;
+
+public class FileUploadController extends AbstractVerticle {
     private String uploadDir;
     private int httpPort;
 
     @Override
-    public void start(Promise<Void> startPromise)
-    {
+    public void start(Promise<Void> startPromise) {
         ConfigRetriever retriever = ConfigRetriever.create(vertx,
                 new ConfigRetrieverOptions()
-                .addStore(new ConfigStoreOptions()
-                        .setType("file")
-                        .setConfig(new JsonObject().put("path", "config.json"))));
+                        .addStore(new ConfigStoreOptions()
+                                .setType("file")
+                                .setConfig(new JsonObject().put("path", "config.json"))));
 
         retriever.getConfig(configResult -> {
             if (configResult.succeeded()) {
@@ -50,17 +53,58 @@ public class FileUploadController extends AbstractVerticle
     }
 
     private void handleFileUpload(RoutingContext context) {
+        String filename = context.request().getParam("filename");
+        String tags = context.request().getParam("tags");
+
+        if (filename == null || tags == null) {
+            context.response()
+                    .putHeader("Content-Type", "application/json; charset=UTF-8")
+                    .setStatusCode(400)
+                    .end("Необходимы параметры filename и tags");
+            return;
+        }
+
+        String uniqueId = UUID.randomUUID().toString();
+        String dirPath = uploadDir + File.separator + uniqueId;
+
+        // Создание уникальной директории
+        File uploadDir = new File(dirPath);
+        if (!uploadDir.mkdirs()) {
+            context.response()
+                    .putHeader("Content-Type", "application/json; charset=UTF-8")
+                    .setStatusCode(500)
+                    .end("Не удалось создать директорию для загрузки");
+            return;
+        }
+
         for (io.vertx.ext.web.FileUpload file : context.fileUploads()) {
             System.out.println("Received file: " + file.fileName());
 
-            // Логика обработки файла
+            // Перемещение файла в уникальную директорию
+            File uploadedFile = new File(file.uploadedFileName());
+            File newFile = new File(uploadDir, filename);
+            uploadedFile.renameTo(newFile);
 
+            // Создание Meta.json
+            JsonObject metaJson = new JsonObject().put("tags", tags);
+            try (FileWriter fileWriter = new FileWriter(new File(uploadDir, "Meta.json"))) {
+                fileWriter.write(metaJson.encodePrettily());
+            } catch (IOException e) {
+                context.response()
+                        .putHeader("Content-Type", "application/json; charset=UTF-8")
+                        .setStatusCode(500)
+                        .end("Ошибка при создании Meta.json");
+                return;
+            }
+
+            // Возврат ID в ответе
             context.response()
-                    .putHeader("Content-Type", "text/plain; charset=UTF-8")
-                    .setStatusCode(200).end("Файл загружен успешно");
+                    .putHeader("Content-Type", "application/json; charset=UTF-8")
+                    .setStatusCode(200)
+                    .end(new JsonObject().put("id", uniqueId).encodePrettily());
 
             break; // Остановимся после первого файла
         }
     }
-}
 
+}
